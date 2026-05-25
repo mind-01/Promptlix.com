@@ -138,6 +138,32 @@ export default function App() {
     setCamera("");
   }, [activeStyle]);
 
+  // Dynamic SEO handler for title tags, descriptions and dynamically generated canonical injection
+  useEffect(() => {
+    if (activeConfig) {
+      document.title = `${activeConfig.seoTitle || "AI Prompt Enhancer"} | Promptlix`;
+      
+      // Update dynamic page meta description for scraper bot readability
+      let metaDesc = document.querySelector('meta[name="description"]');
+      if (!metaDesc) {
+        metaDesc = document.createElement('meta');
+        metaDesc.setAttribute('name', 'description');
+        document.head.appendChild(metaDesc);
+      }
+      metaDesc.setAttribute('content', `${activeConfig.description || activeConfig.tagline}. Optimized for Midjourney, Stable Diffusion, and DALL-E 3 on Promptlix.`);
+
+      // Update dynamic canonical link tag
+      let canonicalLink = document.querySelector('link[rel="canonical"]');
+      if (!canonicalLink) {
+        canonicalLink = document.createElement('link');
+        canonicalLink.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalLink);
+      }
+      const canonicalURL = `${window.location.origin}${window.location.pathname}?category=${activeStyle}`;
+      canonicalLink.setAttribute('href', canonicalURL);
+    }
+  }, [activeStyle, activeConfig]);
+
   // Handle clickable quick pre-fill tags
   const handleSelectTrending = (item: any) => {
     setSubject(item.text || item.subject || "");
