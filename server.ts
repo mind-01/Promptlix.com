@@ -173,6 +173,68 @@ async function startServer() {
     }
   });
 
+  // Dynamic XML Sitemap for Search Engine Crawling and GSC submission
+  app.get("/sitemap.xml", (req, res) => {
+    const host = req.headers.host || "promptlix.com";
+    const protocol = req.secure || req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
+    const baseURL = `${protocol}://${host}`;
+    
+    const categories = [
+      "general",
+      "anime",
+      "realistic",
+      "cinematic",
+      "logo",
+      "fantasy",
+      "luxury",
+      "architecture",
+      "cyberpunk"
+    ];
+
+    const futureLandingPages = [
+      "anime-prompt-generator",
+      "cinematic-ai-prompts",
+      "midjourney-prompts"
+    ];
+
+    const urls = [
+      `<url><loc>${baseURL}/</loc><priority>1.0</priority><changefreq>daily</changefreq></url>`
+    ];
+
+    // Core categories with priority
+    categories.forEach(slug => {
+      urls.push(`<url><loc>${baseURL}/?category=${slug}</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>`);
+    });
+
+    // Support for future landing structures dynamically listed for early indexing crawlers
+    futureLandingPages.forEach(slug => {
+      urls.push(`<url><loc>${baseURL}/${slug}</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>`);
+    });
+
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  ${urls.join("\n  ")}
+</urlset>`;
+
+    res.header("Content-Type", "application/xml");
+    res.status(200).send(sitemap);
+  });
+
+  // Robots.txt specifications for crawling guidelines
+  app.get("/robots.txt", (req, res) => {
+    const host = req.headers.host || "promptlix.com";
+    const protocol = req.secure || req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
+    const baseURL = `${protocol}://${host}`;
+
+    const content = `User-agent: *
+Allow: /
+
+Sitemap: ${baseURL}/sitemap.xml`;
+
+    res.header("Content-Type", "text/plain");
+    res.status(200).send(content);
+  });
+
   // Vite middleware setup
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
