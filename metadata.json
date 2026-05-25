@@ -1,0 +1,6 @@
+{
+  "name": "AI Prompt Enhancer Tool",
+  "description": "Convert simple prompts into professional keywords for Midjourney, Leonardo AI, and other image generators with style rules, custom presets, SEO categories, and an optional server-side Gemini optimizer.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
