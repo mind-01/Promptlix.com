@@ -175,9 +175,10 @@ async function startServer() {
 
   // Dynamic XML Sitemap for Search Engine Crawling and GSC submission
   app.get("/sitemap.xml", (req, res) => {
-    const host = req.headers.host || "promptlix.com";
+    const host = req.headers.host || "promptlix-com.vercel.app";
     const protocol = req.secure || req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
     const baseURL = `${protocol}://${host}`;
+    const today = new Date().toISOString().split("T")[0];
     
     const categories = [
       "general",
@@ -191,24 +192,13 @@ async function startServer() {
       "cyberpunk"
     ];
 
-    const futureLandingPages = [
-      "anime-prompt-generator",
-      "cinematic-ai-prompts",
-      "midjourney-prompts"
-    ];
-
     const urls = [
-      `<url><loc>${baseURL}/</loc><priority>1.0</priority><changefreq>daily</changefreq></url>`
+      `<url><loc>${baseURL}/</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>`
     ];
 
     // Core categories with priority
     categories.forEach(slug => {
-      urls.push(`<url><loc>${baseURL}/?category=${slug}</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>`);
-    });
-
-    // Support for future landing structures dynamically listed for early indexing crawlers
-    futureLandingPages.forEach(slug => {
-      urls.push(`<url><loc>${baseURL}/${slug}</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>`);
+      urls.push(`<url><loc>${baseURL}/?category=${slug}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>`);
     });
 
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
@@ -222,7 +212,7 @@ async function startServer() {
 
   // Robots.txt specifications for crawling guidelines
   app.get("/robots.txt", (req, res) => {
-    const host = req.headers.host || "promptlix.com";
+    const host = req.headers.host || "promptlix-com.vercel.app";
     const protocol = req.secure || req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
     const baseURL = `${protocol}://${host}`;
 
