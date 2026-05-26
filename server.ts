@@ -173,40 +173,7 @@ async function startServer() {
     }
   });
 
-  // Dynamic XML Sitemap for Search Engine Crawling and GSC submission
-  app.get("/sitemap.xml", (req, res) => {
-    const host = req.headers.host || "promptlix-com.vercel.app";
-    const protocol = req.secure || req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
-    const baseURL = `${protocol}://${host}`;
-    const today = new Date().toISOString().split("T")[0];
-    
-    const urls = [
-      `<url><loc>${baseURL}/</loc><lastmod>${today}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>`
-    ];
 
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  ${urls.join("\n  ")}
-</urlset>`;
-
-    res.header("Content-Type", "application/xml");
-    res.status(200).send(sitemap);
-  });
-
-  // Robots.txt specifications for crawling guidelines
-  app.get("/robots.txt", (req, res) => {
-    const host = req.headers.host || "promptlix-com.vercel.app";
-    const protocol = req.secure || req.headers["x-forwarded-proto"] === "https" ? "https" : "http";
-    const baseURL = `${protocol}://${host}`;
-
-    const content = `User-agent: *
-Allow: /
-
-Sitemap: ${baseURL}/sitemap.xml`;
-
-    res.header("Content-Type", "text/plain");
-    res.status(200).send(content);
-  });
 
   // Vite middleware setup
   if (process.env.NODE_ENV !== "production") {
